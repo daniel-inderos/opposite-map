@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Map with Geoapify</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    
+    <style>
+      #map {
+    width: 100vw;     /* 100% of the viewport width */
+    height: 100vh;    /* 100% of the viewport height */
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    
+    <script>
+        // Initialize the map
+        const map = L.map('map').setView([0, 0], 2);
+
+        // Add Geoapify's map tiles to the map
+        L.tileLayer('https://maps.geoapify.com/v1/tile/osm-bright/{z}/{x}/{y}.png?apiKey=e90007997b284236b20f3c247412a1e5', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19,
+        }).addTo(map);
+
+        // Add click event to move the map to the antipode
+        map.on('click', (event) => {
+            // Calculate the antipode
+            const antipodeLat = -event.latlng.lat;
+            const antipodeLng = event.latlng.lng > 0 ? event.latlng.lng - 180 : event.latlng.lng + 180;
+
+            // Animate the map to the antipode
+            map.flyTo([antipodeLat, antipodeLng], map.getZoom(), {
+                animate: true,
+                duration: 2 // Duration in seconds
+            });
+        });
+    </script>
+</body>
+</html>
