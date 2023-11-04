@@ -3,10 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Map</title>
-    <!-- Mapbox GL JS -->
-    <script src="https://api.mapbox.com/mapbox-gl-js/v2.4.1/mapbox-gl.js"></script>
-    <link href="https://api.mapbox.com/mapbox-gl-js/v2.4.1/mapbox-gl.css" rel="stylesheet" />
+    <title>Your Map with Geoapify</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    
     <style>
         #map {
             width: 100%;
@@ -18,23 +22,21 @@
     <div id="map"></div>
     
     <script>
-        mapboxgl.accessToken = 'e90007997b284236b20f3c247412a1e5'; // Replace with your API key
+        // Initialize the map
+        const map = L.map('map').setView([0, 0], 2);
 
-        const map = new mapboxgl.Map({
-            container: 'map',
-            style: 'mapbox://styles/mapbox/streets-v11', // You can choose other styles if you prefer
-            center: [0, 0],  // Default center of the map
-            zoom: 2  // Default zoom level
-        });
+        // Add Geoapify's map tiles to the map
+        L.tileLayer('https://maps.geoapify.com/v1/tile/osm-bright/{z}/{x}/{y}.png?apiKey=e90007997b284236b20f3c247412a1e5', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19,
+        }).addTo(map);
 
+        // Add click event to move the map to the antipode
         map.on('click', (event) => {
-            const antipodeLng = event.lngLat.lng > 0 ? event.lngLat.lng - 180 : event.lngLat.lng + 180;
-            const antipodeLat = -event.lngLat.lat;
+            const antipodeLng = event.latlng.lng > 0 ? event.latlng.lng - 180 : event.latlng.lng + 180;
+            const antipodeLat = -event.latlng.lat;
 
-            map.flyTo({
-                center: [antipodeLng, antipodeLat],
-                essential: true
-            });
+            map.flyTo([antipodeLat, antipodeLng], map.getZoom());
         });
     </script>
 </body>
