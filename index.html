@@ -33,10 +33,15 @@
 
         // Add click event to move the map to the antipode
         map.on('click', (event) => {
-            const antipodeLng = event.latlng.lng > 0 ? event.latlng.lng - 180 : event.latlng.lng + 180;
+            // Calculate the antipode
             const antipodeLat = -event.latlng.lat;
+            const antipodeLng = event.latlng.lng > 0 ? event.latlng.lng - 180 : event.latlng.lng + 180;
 
-            map.flyTo([antipodeLat, antipodeLng], map.getZoom());
+            // Animate the map to the antipode
+            map.flyTo([antipodeLat, antipodeLng], map.getZoom(), {
+                animate: true,
+                duration: 2 // Duration in seconds
+            });
         });
     </script>
 </body>
