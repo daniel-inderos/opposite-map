@@ -5,23 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome to Opposite</title>
     <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
         .main-header {
-            text-align: center;
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 20px;
         }
+
         .instructions {
+            color: #666;
+            margin-bottom: 40px;
+            width: 60%;
             text-align: center;
         }
+
         .get-started {
-            text-align: center;
+            background-color: #007BFF;
+            color: #fff;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
         }
+
+        .get-started:hover {
+            background-color: #0056b3;
+        }
+
         .get-started-link {
-            text-align: center;
+            text-decoration: none;
+            color: #fff;
         }
     </style>
 </head>
 <body>
     <h1 class="main-header">Welcome to the Opposite Map!</h1>
     <h3 class="instructions">Here you can click on a part of the map and it will go to the place exactly opposite from it!</h3>
-    <button class="get-started"><a href="page.html" class="get-started-link">Get Started!</a></button>
+    <button class="get-started">
+        <a href="page.html" class="get-started-link">Get Started!</a>
+    </button>
 </body>
 </html>
