@@ -17,6 +17,10 @@ Opposite Map is a web application that allows users to find the antipodal point 
 
 ## Usage
 
+Go to https://opposite-map.vercel.app
+
+Or 👇
+
 1. Open `index.html` in a web browser to see the welcome page.
 2. Click on "Get Started!" to open the main application (`map.html`).
 3. On the map page:
@@ -31,20 +35,3 @@ The application appears to use HTML and likely JavaScript (not provided in the g
 ## Installation
 
 As this is a web-based application, no installation is required. Simply host the HTML files on a web server or open them directly in a web browser.
-
-## Contributing
-
-As this is a basic version of the application, there are several ways it could be enhanced:
-
-1. Implement the JavaScript functionality for map interactions.
-2. Add CSS for improved styling and responsiveness.
-3. Enhance error handling and user feedback.
-4. Add more features, such as saving locations or sharing results.
-
-## License
-
-[Add appropriate license information here]
-
-## Contact
-
-[Add contact information or links to project repository here]
