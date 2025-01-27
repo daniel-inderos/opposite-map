@@ -1,0 +1,55 @@
+
+        .container {
+          max-width: 800px;
+          margin: 0 auto;
+          padding: 20px;
+          font-family: Arial, sans-serif;
+        }
+
+        .input-section {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          margin-bottom: 20px;
+        }
+
+        .input-group {
+          display: flex;
+          gap: 10px;
+          align-items: center;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+          padding: 8px;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          flex-grow: 1;
+        }
+
+        button {
+          padding: 8px 16px;
+          background-color: #4CAF50;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+        }
+
+        button:hover {
+          background-color: #45a049;
+        }
+
+        #map {
+          height: 400px;
+          border-radius: 4px;
+          margin-top: 20px;
+        }
+
+        #result {
+          margin-top: 20px;
+          padding: 10px;
+          border-radius: 4px;
+          background-color: #f0f0f0;
+        }
+      
