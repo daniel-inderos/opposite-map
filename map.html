@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,13 +7,25 @@
     <title>Enhanced Opposite Map</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
     <link rel="stylesheet" href="styles/map.css">
+    <meta name="description" content="Find the antipodal point of any location on Earth">
+    <meta name="author" content="Your Name">
+    <link rel="icon" href="favicon.ico">
 </head>
 <body>
     <div id="map"></div>
-    <div id="info">Click on the map to place a pin, then click "Go to Opposite" to see the opposite point.</div>
+    <div id="info">
+        <div class="loading-spinner"></div>
+        <div id="infoContent"></div>
+    </div>
     <div id="controls">
-        <button id="geolocate" class="button">Use My Location</button>
-        <button id="goToOpposite" class="button">Go to Opposite</button>
+        <button id="geolocate" class="button">
+            <span>📍</span>
+            <span>My Location</span>
+        </button>
+        <button id="goToOpposite" class="button">
+            <span>🔄</span>
+            <span>Opposite</span>
+        </button>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
@@ -21,3 +34,4 @@
     <script src="js/map.js"></script>
 </body>
 </html>
+      
