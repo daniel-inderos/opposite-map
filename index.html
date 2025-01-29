@@ -1,18 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to the Opposite Map!</title>
-    <link rel="stylesheet" href="styles/index.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Welcome to the Opposite Map!</title>
+  <!-- Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <!-- CSS Styles -->
+  <link rel="stylesheet" href="styles/index.css" />
 </head>
 <body>
-    <div class="container">
-        <h1 id="welcome-to-the-opposite-map" class="main-header">Welcome to the Opposite Map!</h1>
-        <h3 id="here-you-can-click-on-a-part-of-the-map-and-it-will-go-to-the-place-exactly-opposite-from-it" class="instructions">
-            Here you can click on a part of the map and it will show you the place exactly opposite from it!
-        </h3>
-        <a href="map.html" class="get-started-link">Get Started!</a>
+  <header class="main-header">
+    <nav class="navbar">
+      <div class="logo">
+        <span class="logo-icon">&#x1F30D;</span>
+        <span class="logo-text">OppositeMap</span>
+      </div>
+      <a href="map.html" class="navbar-link">Get Started</a>
+    </nav>
+  </header>
+
+  <div class="hero-section">
+    <div class="hero-content">
+      <h1 class="hero-title">Welcome to the Opposite Map!</h1>
+      <p class="hero-subtitle">
+        Click on any part of the map to discover its exact opposite location!
+      </p>
+      <a href="map.html" class="hero-button">Explore Now</a>
     </div>
+  </div>
+
+  <section class="info-section">
+    <div class="info-container">
+      <h2 class="info-heading">How Does It Work?</h2>
+      <p class="info-text">
+        The Opposite Map is an interactive web app that finds the antipode of any 
+        location you click. Simply pick a point, and the app instantly calculates
+        the spot on the Earth that's diametrically opposite. Where will you land?
+      </p>
+      <a href="map.html" class="info-button">Try It Out</a>
+    </div>
+  </section>
 </body>
 </html>
