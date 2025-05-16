@@ -32,7 +32,7 @@ Or 👇
 
 ## Technical Details
 
-The application appears to use HTML and likely JavaScript (not provided in the given files) to handle the map interactions and calculations. CSS is probably used for styling, but the styles are not included in the provided content.
+This project is built with plain HTML pages. Interactivity is handled by `js/map.js`, which relies on the Leaflet library. Styling is provided by `styles/index.css` and `styles/map.css`.
 
 ## Installation
 
