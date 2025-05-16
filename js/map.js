@@ -6,6 +6,34 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 let marker, oppositeMarker, line;
 let selectedLat, selectedLng;
 
+// Search form submission
+document.getElementById('searchForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const query = document.getElementById('searchInput').value.trim();
+    if (!query) return;
+
+    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
+        .then(res => res.json())
+        .then(data => {
+            if (data && data.length > 0) {
+                const lat = parseFloat(data[0].lat);
+                const lon = parseFloat(data[0].lon);
+                selectedLat = lat;
+                selectedLng = lon;
+
+                map.setView([lat, lon], 12);
+
+                if (marker) map.removeLayer(marker);
+                marker = L.marker([lat, lon]).addTo(map);
+
+                updateInfo(selectedLat, selectedLng, null, null);
+            } else {
+                alert('Location not found.');
+            }
+        })
+        .catch(() => alert('Error fetching location.'));
+});
+
 // Map click event
 map.on('click', function(e) {
     selectedLat = e.latlng.lat;
