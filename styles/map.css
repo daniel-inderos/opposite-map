@@ -1,4 +1,3 @@
-
 body, html {
     height: 100%;
     margin: 0;
@@ -114,6 +113,26 @@ body, html {
     transform: translateY(-2px);
 }
 
+#toggleMode {
+    background-color: #27ae60;
+    color: white;
+}
+
+#toggleMode:hover {
+    background-color: #2ecc71;
+    transform: translateY(-2px);
+}
+
+#saveFavorite {
+    background-color: #9b59b6;
+    color: white;
+}
+
+#saveFavorite:hover {
+    background-color: #8e44ad;
+    transform: translateY(-2px);
+}
+
 #goToOpposite:active {
     transform: translateY(0);
 }
@@ -194,4 +213,25 @@ body, html {
         width: 100%;
     }
 }
-      
+
+#favorites {
+    position: absolute;
+    top: 80px;
+    left: 20px;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+#favorites label {
+    margin-right: 5px;
+    font-weight: 600;
+}
+
+#favoritesList {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}

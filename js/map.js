@@ -14,6 +14,9 @@ let marker3D, oppositeMarker3D, line3D;
 let selectedLat, selectedLng, oppositeLat, oppositeLng;
 let currentMode = '2D';
 
+// Initialize favorites on load
+populateFavorites();
+
 function switchTo2D() {
     document.getElementById('globe').style.display = 'none';
     document.getElementById('map').style.display = 'block';
@@ -108,6 +111,23 @@ map2D.on('click', function(e) {
 
 map3D.on('click', function(e) {
     handleMapClick(e.latlng.lat, e.latlng.lng);
+});
+
+// Save Favorite button
+document.getElementById('saveFavorite').addEventListener('click', function() {
+    if (!selectedLat || !selectedLng) {
+        alert('Please select a point on the map first.');
+        return;
+    }
+
+    const oppLat = -selectedLat;
+    const oppLng = (selectedLng < 0) ? selectedLng + 180 : selectedLng - 180;
+
+    const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+    favorites.push({ lat: selectedLat, lng: selectedLng, oppLat: oppLat, oppLng: oppLng });
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+
+    populateFavorites();
 });
 
 document.getElementById('goToOpposite').addEventListener('click', async function() {
@@ -267,3 +287,42 @@ function isOcean(lat, lng) {
 
     return true; // Ocean
 }
+
+function populateFavorites() {
+    const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+    const select = document.getElementById('favoritesList');
+    if (!select) return;
+    select.innerHTML = '';
+    const placeholder = document.createElement('option');
+    placeholder.textContent = 'Select favorite';
+    placeholder.disabled = true;
+    placeholder.selected = true;
+    select.appendChild(placeholder);
+    favorites.forEach((fav, idx) => {
+        const opt = document.createElement('option');
+        opt.value = idx;
+        opt.textContent = `${fav.lat.toFixed(4)}, ${fav.lng.toFixed(4)}`;
+        select.appendChild(opt);
+    });
+}
+
+document.getElementById('favoritesList').addEventListener('change', function() {
+    const index = parseInt(this.value, 10);
+    const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+    const fav = favorites[index];
+    if (!fav) return;
+
+    selectedLat = fav.lat;
+    selectedLng = fav.lng;
+    oppositeLat = fav.oppLat;
+    oppositeLng = fav.oppLng;
+
+    if (currentMode === '2D') {
+        map2D.setView([selectedLat, selectedLng], 6);
+    } else {
+        map3D.setView([selectedLat, selectedLng], 3);
+    }
+    
+    renderMarkers();
+    updateInfo(selectedLat, selectedLng, oppositeLat, oppositeLng);
+});
