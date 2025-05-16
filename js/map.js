@@ -1,10 +1,34 @@
-const map = L.map('map').setView([0, 0], 2);
+const map2D = L.map('map').setView([0, 0], 2);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap contributors'
-}).addTo(map);
+}).addTo(map2D);
 
-let marker, oppositeMarker, line;
-let selectedLat, selectedLng;
+const map3D = WE.map('globe');
+WE.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+}).addTo(map3D);
+map3D.setView([0, 0], 2);
+
+let marker2D, oppositeMarker2D, line2D;
+let marker3D, oppositeMarker3D, line3D;
+let selectedLat, selectedLng, oppositeLat, oppositeLng;
+let currentMode = '2D';
+
+function switchTo2D() {
+    document.getElementById('globe').style.display = 'none';
+    document.getElementById('map').style.display = 'block';
+    currentMode = '2D';
+    renderMarkers();
+    document.getElementById('toggleMode').innerText = 'Switch to 3D';
+}
+
+function switchTo3D() {
+    document.getElementById('map').style.display = 'none';
+    document.getElementById('globe').style.display = 'block';
+    currentMode = '3D';
+    renderMarkers();
+    document.getElementById('toggleMode').innerText = 'Switch to 2D';
+}
 
 // Search form submission
 document.getElementById('searchForm').addEventListener('submit', function(e) {
@@ -18,16 +42,15 @@ document.getElementById('searchForm').addEventListener('submit', function(e) {
             if (data && data.length > 0) {
                 const lat = parseFloat(data[0].lat);
                 const lon = parseFloat(data[0].lon);
-                selectedLat = lat;
-                selectedLng = lon;
-
-                map.setView([lat, lon], 12);
-
-                if (marker) map.removeLayer(marker);
-                marker = L.marker([lat, lon]).addTo(map);
-
-                updateInfo(selectedLat, selectedLng, null, null);
-                updateURL(selectedLat, selectedLng);
+                handleMapClick(lat, lon);
+                
+                if (currentMode === '2D') {
+                    map2D.setView([lat, lon], 12);
+                } else {
+                    map3D.setView([lat, lon], 3);
+                }
+                
+                updateURL(lat, lon);
             } else {
                 alert('Location not found.');
             }
@@ -42,8 +65,12 @@ const paramLng = parseFloat(params.get('lng'));
 if (!isNaN(paramLat) && !isNaN(paramLng)) {
     selectedLat = paramLat;
     selectedLng = paramLng;
-    map.setView([selectedLat, selectedLng], 6);
-    marker = L.marker([selectedLat, selectedLng]).addTo(map);
+    if (currentMode === '2D') {
+        map2D.setView([selectedLat, selectedLng], 6);
+    } else {
+        map3D.setView([selectedLat, selectedLng], 3);
+    }
+    renderMarkers();
     updateInfo(selectedLat, selectedLng, null, null);
 }
 
@@ -55,58 +82,58 @@ function updateURL(lat, lng) {
     history.replaceState({}, '', newUrl);
 }
 
-// Map click event
-map.on('click', function(e) {
-    selectedLat = e.latlng.lat;
-    selectedLng = e.latlng.lng;
-
-    if (marker) map.removeLayer(marker);
-    marker = L.marker([selectedLat, selectedLng]).addTo(map);
-
-    updateInfo(selectedLat, selectedLng, null, null);
-    updateURL(selectedLat, selectedLng);
+document.getElementById('toggleMode').addEventListener('click', function() {
+    if (currentMode === '2D') {
+        switchTo3D();
+    } else {
+        switchTo2D();
+    }
 });
 
-// Go to Opposite button
+function handleMapClick(lat, lng) {
+    selectedLat = lat;
+    selectedLng = lng;
+    oppositeLat = null;
+    oppositeLng = null;
+    renderMarkers();
+    updateInfo(selectedLat, selectedLng, null, null);
+    updateURL(selectedLat, selectedLng);
+}
+
+map2D.on('click', function(e) {
+    handleMapClick(e.latlng.lat, e.latlng.lng);
+});
+
+map3D.on('click', function(e) {
+    handleMapClick(e.latlng.lat, e.latlng.lng);
+});
+
 document.getElementById('goToOpposite').addEventListener('click', function() {
-    if (selectedLat === undefined || selectedLng === undefined) {
+    if (selectedLat == null || selectedLng == null) {
         alert('Please select a point on the map first.');
         return;
     }
-
-    const oppositeLat = -selectedLat;
-    const oppositeLng = (selectedLng < 0) ? selectedLng + 180 : selectedLng - 180;
-
-    if (oppositeMarker) map.removeLayer(oppositeMarker);
-    oppositeMarker = L.marker([oppositeLat, oppositeLng]).addTo(map);
-
-    // Draw line
-    if (line) map.removeLayer(line);
-    line = L.polyline([[selectedLat, selectedLng], [oppositeLat, oppositeLng]], {color: 'red'}).addTo(map);
-
-    map.fitBounds(line.getBounds());
-
+    oppositeLat = -selectedLat;
+    oppositeLng = (selectedLng < 0) ? selectedLng + 180 : selectedLng - 180;
+    renderMarkers();
     updateInfo(selectedLat, selectedLng, oppositeLat, oppositeLng);
 });
 
-// Geolocation
 document.getElementById('geolocate').addEventListener('click', function() {
-    map.locate({setView: true, maxZoom: 16});
-});
-
-map.on('locationfound', function(e) {
-    selectedLat = e.latlng.lat;
-    selectedLng = e.latlng.lng;
-
-    if (marker) map.removeLayer(marker);
-    marker = L.marker(e.latlng).addTo(map);
-
-    updateInfo(selectedLat, selectedLng, null, null);
-    updateURL(selectedLat, selectedLng);
-});
-
-map.on('locationerror', function(e) {
-    alert("Unable to find your location. Please check your device settings.");
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(pos) {
+            handleMapClick(pos.coords.latitude, pos.coords.longitude);
+            if (currentMode === '2D') {
+                map2D.setView([selectedLat, selectedLng], 16);
+            } else {
+                map3D.setView([selectedLat, selectedLng], 3);
+            }
+        }, function() {
+            alert('Unable to find your location. Please check your device settings.');
+        });
+    } else {
+        alert('Geolocation is not supported by your browser.');
+    }
 });
 
 document.getElementById('share').addEventListener('click', function() {
@@ -114,6 +141,34 @@ document.getElementById('share').addEventListener('click', function() {
         .then(() => alert('URL copied to clipboard!'))
         .catch(() => alert('Failed to copy URL.'));
 });
+
+function renderMarkers() {
+    if (currentMode === '2D') {
+        if (marker2D) map2D.removeLayer(marker2D);
+        if (selectedLat != null) {
+            marker2D = L.marker([selectedLat, selectedLng]).addTo(map2D);
+        }
+        if (oppositeMarker2D) map2D.removeLayer(oppositeMarker2D);
+        if (line2D) map2D.removeLayer(line2D);
+        if (oppositeLat != null) {
+            oppositeMarker2D = L.marker([oppositeLat, oppositeLng]).addTo(map2D);
+            line2D = L.polyline([[selectedLat, selectedLng], [oppositeLat, oppositeLng]], { color: 'red' }).addTo(map2D);
+            map2D.fitBounds(line2D.getBounds());
+        }
+    } else {
+        if (marker3D) map3D.removeLayer(marker3D);
+        if (selectedLat != null) {
+            marker3D = WE.marker([selectedLat, selectedLng]).addTo(map3D);
+        }
+        if (oppositeMarker3D) map3D.removeLayer(oppositeMarker3D);
+        if (line3D) map3D.removeLayer(line3D);
+        if (oppositeLat != null) {
+            oppositeMarker3D = WE.marker([oppositeLat, oppositeLng]).addTo(map3D);
+            line3D = WE.polyline([[selectedLat, selectedLng], [oppositeLat, oppositeLng]], { color: 'red' }).addTo(map3D);
+            map3D.setView([selectedLat, selectedLng], map3D.getZoom());
+        }
+    }
+}
 
 function updateInfo(lat1, lng1, lat2, lng2) {
     let info = `Selected: ${lat1.toFixed(4)}, ${lng1.toFixed(4)}<br>`;
@@ -146,50 +201,45 @@ function isDaytime(lat, lng) {
 
 function calculateDistance(lat1, lon1, lat2, lon2) {
     const R = 6371; // Radius of the earth in km
-    const dLat = deg2rad(lat2-lat1);
-    const dLon = deg2rad(lon2-lon1); 
-    const a = 
-        Math.sin(dLat/2) * Math.sin(dLat/2) +
-        Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
-        Math.sin(dLon/2) * Math.sin(dLon/2)
-    ; 
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+    const dLat = deg2rad(lat2 - lat1);
+    const dLon = deg2rad(lon2 - lon1);
+    const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const d = R * c; // Distance in km
     return d;
 }
 
 function deg2rad(deg) {
-    return deg * (Math.PI/180);
+    return deg * (Math.PI / 180);
 }
 
 function isOcean(lat, lng) {
-    // Major continents rough boundaries
     const landmasses = [
-        // North America
         { minLat: 15, maxLat: 72, minLng: -168, maxLng: -52 },
-        // South America
         { minLat: -56, maxLat: 12, minLng: -81, maxLng: -34 },
-        // Europe and Asia
         { minLat: 35, maxLat: 70, minLng: -10, maxLng: 180 },
         { minLat: 0, maxLat: 35, minLng: 20, maxLng: 150 },
-        // Africa
         { minLat: -35, maxLat: 37, minLng: -17, maxLng: 51 },
-        // Australia
         { minLat: -44, maxLat: -10, minLng: 113, maxLng: 154 }
     ];
 
-    // Normalize longitude to -180 to 180 range
     let normalizedLng = lng;
     while (normalizedLng > 180) normalizedLng -= 360;
     while (normalizedLng < -180) normalizedLng += 360;
 
-    // Check if the point is within any landmass
     for (const landmass of landmasses) {
-        if (lat >= landmass.minLat && lat <= landmass.maxLat &&
-            normalizedLng >= landmass.minLng && normalizedLng <= landmass.maxLng) {
-            return false; // Not ocean
+        if (
+            lat >= landmass.minLat &&
+            lat <= landmass.maxLat &&
+            normalizedLng >= landmass.minLng &&
+            normalizedLng <= landmass.maxLng
+        ) {
+            return false;
         }
     }
-    
-    return true; // Ocean
-} 
+
+    return true;
+}
