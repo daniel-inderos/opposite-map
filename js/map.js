@@ -27,12 +27,33 @@ document.getElementById('searchForm').addEventListener('submit', function(e) {
                 marker = L.marker([lat, lon]).addTo(map);
 
                 updateInfo(selectedLat, selectedLng, null, null);
+                updateURL(selectedLat, selectedLng);
             } else {
                 alert('Location not found.');
             }
         })
         .catch(() => alert('Error fetching location.'));
 });
+
+// Check query parameters on load
+const params = new URLSearchParams(window.location.search);
+const paramLat = parseFloat(params.get('lat'));
+const paramLng = parseFloat(params.get('lng'));
+if (!isNaN(paramLat) && !isNaN(paramLng)) {
+    selectedLat = paramLat;
+    selectedLng = paramLng;
+    map.setView([selectedLat, selectedLng], 6);
+    marker = L.marker([selectedLat, selectedLng]).addTo(map);
+    updateInfo(selectedLat, selectedLng, null, null);
+}
+
+function updateURL(lat, lng) {
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set('lat', lat);
+    urlParams.set('lng', lng);
+    const newUrl = window.location.pathname + '?' + urlParams.toString();
+    history.replaceState({}, '', newUrl);
+}
 
 // Map click event
 map.on('click', function(e) {
@@ -43,6 +64,7 @@ map.on('click', function(e) {
     marker = L.marker([selectedLat, selectedLng]).addTo(map);
 
     updateInfo(selectedLat, selectedLng, null, null);
+    updateURL(selectedLat, selectedLng);
 });
 
 // Go to Opposite button
@@ -80,10 +102,17 @@ map.on('locationfound', function(e) {
     marker = L.marker(e.latlng).addTo(map);
 
     updateInfo(selectedLat, selectedLng, null, null);
+    updateURL(selectedLat, selectedLng);
 });
 
 map.on('locationerror', function(e) {
     alert("Unable to find your location. Please check your device settings.");
+});
+
+document.getElementById('share').addEventListener('click', function() {
+    navigator.clipboard.writeText(window.location.href)
+        .then(() => alert('URL copied to clipboard!'))
+        .catch(() => alert('Failed to copy URL.'));
 });
 
 function updateInfo(lat1, lng1, lat2, lng2) {

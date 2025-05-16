@@ -97,6 +97,16 @@ body, html {
     transform: translateY(-2px);
 }
 
+#share {
+    background-color: #e67e22;
+    color: white;
+}
+
+#share:hover {
+    background-color: #d35400;
+    transform: translateY(-2px);
+}
+
 #goToOpposite:active {
     transform: translateY(0);
 }
