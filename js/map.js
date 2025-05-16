@@ -96,7 +96,9 @@ function handleMapClick(lat, lng) {
     oppositeLat = null;
     oppositeLng = null;
     renderMarkers();
-    updateInfo(selectedLat, selectedLng, null, null);
+    fetchWeather(selectedLat, selectedLng).then(weather => {
+        updateInfo(selectedLat, selectedLng, null, null, weather);
+    });
     updateURL(selectedLat, selectedLng);
 }
 
@@ -108,15 +110,21 @@ map3D.on('click', function(e) {
     handleMapClick(e.latlng.lat, e.latlng.lng);
 });
 
-document.getElementById('goToOpposite').addEventListener('click', function() {
+document.getElementById('goToOpposite').addEventListener('click', async function() {
     if (selectedLat == null || selectedLng == null) {
         alert('Please select a point on the map first.');
         return;
     }
     oppositeLat = -selectedLat;
     oppositeLng = (selectedLng < 0) ? selectedLng + 180 : selectedLng - 180;
+    
+    const [weather1, weather2] = await Promise.all([
+        fetchWeather(selectedLat, selectedLng),
+        fetchWeather(oppositeLat, oppositeLng)
+    ]);
+    
     renderMarkers();
-    updateInfo(selectedLat, selectedLng, oppositeLat, oppositeLng);
+    updateInfo(selectedLat, selectedLng, oppositeLat, oppositeLng, weather1, weather2);
 });
 
 document.getElementById('geolocate').addEventListener('click', function() {
@@ -170,17 +178,19 @@ function renderMarkers() {
     }
 }
 
-function updateInfo(lat1, lng1, lat2, lng2) {
+function updateInfo(lat1, lng1, lat2, lng2, weather1, weather2) {
     let info = `Selected: ${lat1.toFixed(4)}, ${lng1.toFixed(4)}<br>`;
     info += `Terrain: ${isOcean(lat1, lng1) ? 'Ocean' : 'Land'}<br>`;
     info += `Local Time: ${getLocalTime(lat1, lng1)}<br>`;
     info += `Day/Night: ${isDaytime(lat1, lng1) ? 'Day' : 'Night'}<br>`;
+    info += `Weather: ${weather1 ? weather1 : 'Weather unavailable'}<br>`;
 
     if (lat2 !== null && lng2 !== null) {
         info += `<br>Opposite: ${lat2.toFixed(4)}, ${lng2.toFixed(4)}<br>`;
         info += `Terrain: ${isOcean(lat2, lng2) ? 'Ocean' : 'Land'}<br>`;
         info += `Local Time: ${getLocalTime(lat2, lng2)}<br>`;
         info += `Day/Night: ${isDaytime(lat2, lng2) ? 'Day' : 'Night'}<br>`;
+        info += `Weather: ${weather2 ? weather2 : 'Weather unavailable'}<br>`;
         info += `<br>Distance: ${calculateDistance(lat1, lng1, lat2, lng2).toFixed(2)} km`;
     }
 
@@ -197,6 +207,20 @@ function isDaytime(lat, lng) {
     let hour = date.getUTCHours() + (lng / 15);
     hour = (hour + 24) % 24; // normalize to 0-23 range
     return hour >= 6 && hour < 18;
+}
+
+async function fetchWeather(lat, lng) {
+    try {
+        const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current_weather=true`);
+        if (!response.ok) throw new Error('Network response was not ok');
+        const data = await response.json();
+        if (data && data.current_weather && typeof data.current_weather.temperature !== 'undefined') {
+            return `${data.current_weather.temperature}\u00B0C`;
+        }
+    } catch (err) {
+        console.error('Weather fetch error:', err);
+    }
+    return null;
 }
 
 function calculateDistance(lat1, lon1, lat2, lon2) {
@@ -241,5 +265,5 @@ function isOcean(lat, lng) {
         }
     }
 
-    return true;
+    return true; // Ocean
 }
