@@ -19,7 +19,7 @@ map.on('click', function(e) {
 
 // Go to Opposite button
 document.getElementById('goToOpposite').addEventListener('click', function() {
-    if (!selectedLat || !selectedLng) {
+    if (selectedLat === undefined || selectedLng === undefined) {
         alert('Please select a point on the map first.');
         return;
     }
@@ -82,8 +82,9 @@ function getLocalTime(lat, lng) {
 
 function isDaytime(lat, lng) {
     const date = new Date();
-    const hour = date.getUTCHours() + (lng / 15);
-    return hour > 6 && hour < 18;
+    let hour = date.getUTCHours() + (lng / 15);
+    hour = (hour + 24) % 24; // normalize to 0-23 range
+    return hour >= 6 && hour < 18;
 }
 
 function calculateDistance(lat1, lon1, lat2, lon2) {
