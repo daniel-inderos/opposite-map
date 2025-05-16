@@ -76,8 +76,8 @@ function updateInfo(lat1, lng1, lat2, lng2) {
 }
 
 function getLocalTime(lat, lng) {
-    const timezone = moment.tz.guess(true);
-    return moment().tz(timezone).format('YYYY-MM-DD HH:mm:ss');
+    const offsetHours = Math.round(lng / 15);
+    return moment.utc().utcOffset(offsetHours * 60).format('YYYY-MM-DD HH:mm:ss');
 }
 
 function isDaytime(lat, lng) {

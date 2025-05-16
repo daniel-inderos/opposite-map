@@ -9,6 +9,8 @@ Opposite Map is a web application that allows users to find the antipodal point 
 - Find the exact opposite point on Earth
 - Option to use user's current location
 - Simple and intuitive user interface
+- Displays estimated local time for selected and antipodal points based on their
+  longitude
 
 ## Files
 
