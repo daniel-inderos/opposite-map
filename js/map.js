@@ -225,22 +225,8 @@ function getLocalTime(lat, lng) {
 function isDaytime(lat, lng) {
     const date = new Date();
     let hour = date.getUTCHours() + (lng / 15);
-    hour = (hour + 24) % 24; // normalize to 0-23 range
+    hour = ((hour % 24) + 24) % 24; // normalize to 0-23 range
     return hour >= 6 && hour < 18;
-}
-
-async function fetchWeather(lat, lng) {
-    try {
-        const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current_weather=true`);
-        if (!response.ok) throw new Error('Network response was not ok');
-        const data = await response.json();
-        if (data && data.current_weather && typeof data.current_weather.temperature !== 'undefined') {
-            return `${data.current_weather.temperature}\u00B0C`;
-        }
-    } catch (err) {
-        console.error('Weather fetch error:', err);
-    }
-    return null;
 }
 
 function calculateDistance(lat1, lon1, lat2, lon2) {
@@ -326,3 +312,17 @@ document.getElementById('favoritesList').addEventListener('change', function() {
     renderMarkers();
     updateInfo(selectedLat, selectedLng, oppositeLat, oppositeLng);
 });
+
+async function fetchWeather(lat, lng) {
+    try {
+        const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current_weather=true`);
+        if (!response.ok) throw new Error('Network response was not ok');
+        const data = await response.json();
+        if (data && data.current_weather && typeof data.current_weather.temperature !== 'undefined') {
+            return `${data.current_weather.temperature}\u00B0C`;
+        }
+    } catch (err) {
+        console.error('Weather fetch error:', err);
+    }
+    return null;
+}
